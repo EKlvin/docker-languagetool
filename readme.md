@@ -1,10 +1,42 @@
 
 # Introduction
 
-[LanguageTool](https://languagetool.org/) is an Open Source proof­reading software for English, French,
-German, Polish, and more than 20 other languages.
+[LanguageTool] is an Open Source proof­reading software for English, French,
+German, Polish, Dutch, and more than 20 other languages.
 
-This version is based on the version of [silvio/docker-languagetool](https://github.com/silvio/docker-languagetool) but modified to run on ARM64 devices like the Raspberry Pi. 
+You can use LanguageTool with a [Firefox] or [Chrome] plugin to have proof reading in the browser.
+
+This is a Dockerfile to get the languagetools running on an ARM system without java. 
+
+The repository is forked from [silvio/docker-languagetool] and modified to run on ARM devices like the Raspberry Pi.
+
+[LanguageTool]: https://www.languagetool.org/
+[Firefox]: https://addons.mozilla.org/firefox/addon/languagetoolfx/
+[Chrome]: https://chrome.google.com/webstore/detail/grammar-and-spell-checker/oldceeleldhonbafppcapldpdifcinji
+[silvio/docker-languagetool]: https://github.com/silvio/docker-languagetool
+
+# Usage
+
+The Server is running on port 8010, this port should exposed.
+
+    $ docker pull kelvinstuten/docker-languagetool-arm:latest
+    [...]
+    $ docker run --rm -p 8010:8010 kelvinstuten/docker-languagetool-arm:latest
+
+Or you run it in background via `-d`-option.
+
+Run with no minimum rights and RAM
+```
+docker run --name languagetool \
+                        --cap-drop=ALL \
+                        --user=65534:65534 \
+                        --read-only \
+                        --mount type=bind,src=/tmp/languagetool/tmp,dst=/tmp \
+                        -p 127.0.0.1:8010:8010 \
+                        --memory 412m --memory-swap 200m \
+                        -e EXTRAOPTIONS="-Xmx382M" \
+                        kelvinstuten/docker-languagetool-arm:latest
+```
 
 ## ngram support
 
@@ -26,4 +58,4 @@ Download English ngrams with the commands:
 
 One can use them using web browser plugin "Local server (localhost)" setting by running:
 
-    docker run -d --name languagetool -p 127.0.0.1:8081:8010 -v `pwd`/ngrams:/ngrams:ro --restart=unless-stopped EKlvin/docker-languagetool
+    docker run -d --name languagetool -p 127.0.0.1:8081:8010 -v `pwd`/ngrams:/ngrams:ro --restart=unless-stopped kelvinstuten/languagetool-arm 
